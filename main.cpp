@@ -13,7 +13,6 @@ int main(int argc, char* argv[]) {
         cerr << "  FileCompresser -d input.huff output.txt  (decompress)\n";
         return 1;
     }
-    cout<<"heelo main"<<endl;
 
     string mode = argv[1];
     string input = argv[2];

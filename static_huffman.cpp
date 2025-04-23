@@ -110,6 +110,16 @@ HuffNode* StaticHuffman::build_trie(array<int, ALPHABET_SIZE> &freq){
     }
 
 }
+void print_outputfile_size(string &output_file){
+    ifstream output(output_file, ios::binary);
+    if(!output){
+        throw runtime_error("error ~ at opening output file for computing size");
+    }
+    output.seekg(0, ios::end);
+    uint32_t file_size=output.tellg();
+    output.seekg(0); 
+    cout << "Output file size: " << file_size << endl;
+}
 
 void StaticHuffman::compress(string &input_file, string &output_file){
     ifstream input(input_file, ios::binary);
@@ -134,8 +144,8 @@ void StaticHuffman::compress(string &input_file, string &output_file){
     input.seekg(0, ios::end); //move to end of file
     uint32_t file_size=input.tellg(); //maybe sys call
     input.seekg(0); //rewind
-    cout << "File size: " << file_size << endl;
-
+    cout << "Input file size: " << file_size << endl;
+    
     writer.write_byte((file_size>>24)&0xFF); //msb
     writer.write_byte((file_size>>16)&0xFF);
     writer.write_byte((file_size>>8)&0xFF);
@@ -150,6 +160,8 @@ void StaticHuffman::compress(string &input_file, string &output_file){
     }
     writer.flush();
     free_trie(root);
+
+    print_outputfile_size(output_file);
 }
 
 void StaticHuffman::decompress(string &input_file, string &output_file){

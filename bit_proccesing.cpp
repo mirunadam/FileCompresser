@@ -36,4 +36,37 @@ bool bit_reader::read_byte(uint8_t &byte){
     return true;
 }
 
+bit_writer::bit_writer(const string &filename){
+    output.open(filename, ios::binary);
+}
 
+bit_writer::~bit_writer(){
+    write_buffer();
+    output.close();
+}
+
+void bit_writer::write_bit(bool bit){
+    buffer |= bit<<(7-nbits);
+    if(++nbits==8){
+        write_buffer(); 
+    }
+}
+
+void bit_writer::write_byte(uint8_t byte){
+    for(int i=7; i>=0; --i){
+        write_bit((byte >> i)&1);
+    }
+}
+
+void bit_writer::write_buffer(){
+    if(nbits>0){
+        output.put(buffer);
+        buffer=0;
+        nbits=0;
+    }
+}
+
+void bit_writer::flush() {
+    write_buffer();
+    output.flush();
+}

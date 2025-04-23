@@ -24,5 +24,6 @@ public:
     ~bit_writer();
     void write_bit(bool bit);
     void write_byte(uint8_t byte);
-    void write_partial_byte();
+    void write_buffer();
+    void flush();
 };

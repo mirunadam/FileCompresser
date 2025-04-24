@@ -121,6 +121,17 @@ void print_outputfile_size(string &output_file){
     cout << "Output file size: " << file_size << endl;
 }
 
+void print_inputfile_size(string &input){
+    ifstream input(input_file, ios::binary);
+    if(!input){
+        throw runtime_error("error ~ at opening input file for compression");
+    }
+    input.seekg(0, ios::end);
+    uint32_t file_size=input.tellg();
+    input.seekg(0);
+    cout << "Input file size: " << file_size << endl;
+}
+
 void StaticHuffman::compress(string &input_file, string &output_file){
     ifstream input(input_file, ios::binary);
     if(!input){
@@ -142,7 +153,7 @@ void StaticHuffman::compress(string &input_file, string &output_file){
     write_trie(root, writer); //serialize
 
     input.seekg(0, ios::end); //move to end of file
-    uint32_t file_size=input.tellg(); //maybe sys call
+    uint32_t file_size=input.tellg(); //
     input.seekg(0); //rewind
     cout << "Input file size: " << file_size << endl;
     
@@ -198,6 +209,7 @@ void StaticHuffman::decompress(string &input_file, string &output_file){
         }
         output.put(x->ch);
     }
-
+    print_inputfile_size(input_file);
+    print_outputfile_size(output_file);
     free_trie(root);
 }

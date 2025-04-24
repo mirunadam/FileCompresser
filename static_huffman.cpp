@@ -121,7 +121,7 @@ void print_outputfile_size(string &output_file){
     cout << "Output file size: " << file_size << endl;
 }
 
-void print_inputfile_size(string &input){
+void print_inputfile_size(string &input_file){
     ifstream input(input_file, ios::binary);
     if(!input){
         throw runtime_error("error ~ at opening input file for compression");
@@ -209,7 +209,9 @@ void StaticHuffman::decompress(string &input_file, string &output_file){
         }
         output.put(x->ch);
     }
+    free_trie(root);
+    output.flush();
+    output.close(); 
     print_inputfile_size(input_file);
     print_outputfile_size(output_file);
-    free_trie(root);
 }

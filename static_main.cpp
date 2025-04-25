@@ -4,7 +4,7 @@
 #include <fstream>
 #include <string>
 using namespace std;
-//g++ -g -o stathuff main.cpp static_huffman.cpp bit_proccesing.cpp
+//g++ -g -o stathuff static_main.cpp static_huffman.cpp bit_proccesing.cpp
 
 int main(int argc, char* argv[]) {
     if (argc != 4) {

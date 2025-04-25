@@ -8,6 +8,7 @@
 #include <vector>
 #include "bit_proccesing.hpp"
 using namespace std;
+#define ALPHABET_SIZE 256
 
 struct HuffNode {
     char ch;
@@ -18,7 +19,7 @@ struct HuffNode {
 };
 
 class StaticHuffman {
-    static const int ALPHABET_SIZE = 256;
+
     void build_table(HuffNode *x, string path, array<string, ALPHABET_SIZE> &table);
     array<int, ALPHABET_SIZE> count_freq(ifstream &input);
     HuffNode* build_trie(array<int, ALPHABET_SIZE> &freq);

@@ -13,20 +13,20 @@ bit_reader::~bit_reader(){
 }
 
 bool bit_reader::read_bit(bool &bit){
-    if(nbits == 0){
-        if(!input.get((char&)buffer)){ //if get failed
+    if(nbits == 0){ //if buff empty
+        if(!input.get((char&)buffer)){ //if get failed to read new byte
             return false;
         }
-        nbits = 8;
+        nbits = 8; //reset counter
     }
     bit = (buffer >> (--nbits)) &1; //extract bits from msb to lsb
     //right shift to go at the lsb and mask all bits except the lsb
     return true;
 }
 
-bool bit_reader::read_byte(uint8_t &byte){
+bool bit_reader::read_byte(uint8_t &byte){ //useful for reading raw charachers (decomp)
     byte = 0;
-    for(int i = 0; i<8; ++i){
+    for(int i = 0; i<8; ++i){ //packs the 8 bits read individually into a byte
         bool bit;
         if(!read_bit(bit)){
             return false;
@@ -46,21 +46,21 @@ bit_writer::~bit_writer(){
 }
 
 void bit_writer::write_bit(bool bit){
-    buffer |= bit<<(7-nbits);
+    buffer |= bit<<(7-nbits); //sets the target bit position without disturbimg the other bits from buffer
     if(++nbits==8){
         write_buffer(); 
     }
 }
 
 void bit_writer::write_byte(uint8_t byte){
-    for(int i=7; i>=0; --i){
-        write_bit((byte >> i)&1);
+    for(int i=7; i>=0; --i){  //writes full byte as individuals bits
+        write_bit((byte >> i)&1); //write msb first
     }
 }
 
 void bit_writer::write_buffer(){
     if(nbits>0){
-        output.put(buffer);
+        output.put(buffer); //write partial byte
         buffer=0;
         nbits=0;
     }

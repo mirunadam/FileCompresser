@@ -18,7 +18,7 @@ HuffNode::HuffNode(char c, int f, HuffNode *l, HuffNode  *r){
 }
 
 bool const HuffNode::isLeaf(){
-    return !left && !right;
+    return !left && !right; //true if both children are null
 }
 
 struct CompareHuffNode {
@@ -27,10 +27,9 @@ struct CompareHuffNode {
     }
 };
 
-
 void StaticHuffman::build_table(HuffNode *x, string path, array<string, ALPHABET_SIZE> &table){
     if(x->isLeaf()){
-        table[static_cast<uint8_t>(x->ch)] = path; //fills st with character so binary code mappings
+        table[static_cast<uint8_t>(x->ch)] = path; //fills table with character so binary code mappings
         return;
     }
 
@@ -45,7 +44,7 @@ HuffNode* StaticHuffman::read_trie(bit_reader &reader){
     }
     if(isLeaf){
         uint8_t ch;
-        if(!reader.read_byte(ch)){
+        if(!reader.read_byte(ch)){ //read the char if it is a leaf
             throw runtime_error("error ~ when reading trie data");
         }
         return new HuffNode(ch, -1, nullptr, nullptr); //leaf node store ch, we dont care about the freq anymore at decompress
@@ -55,16 +54,16 @@ HuffNode* StaticHuffman::read_trie(bit_reader &reader){
 
 void StaticHuffman::write_trie(HuffNode *x, bit_writer &writer){
     if(x->isLeaf()){
-        writer.write_bit(true);
-        writer.write_byte(x->ch);
+        writer.write_bit(true); //leaf
+        writer.write_byte(x->ch); //write char
         return;
     }
-    writer.write_bit(false);
-    write_trie(x->left, writer);
-    write_trie(x->right, writer);
+    writer.write_bit(false); //internal node 
+    write_trie(x->left, writer); //serialize left part
+    write_trie(x->right, writer); //serialize right part
 }
 
-void StaticHuffman::free_trie(HuffNode *x){
+void Huffman::free_trie(HuffNode *x){ //works post order ~ first free childern
     if(!x){
         return;
     }
@@ -77,7 +76,7 @@ array<int, ALPHABET_SIZE> StaticHuffman::count_freq(ifstream &input){
     array<int, ALPHABET_SIZE> freq ={0};
     char c;
     while(input.get(c)){
-        freq[static_cast<uint8_t>(c)]++;
+        freq[static_cast<uint8_t>(c)]++; //cast to make sure characters are treated as positive indexes
     } 
     input.clear();
     input.seekg(0); //rewinds to start
@@ -85,14 +84,14 @@ array<int, ALPHABET_SIZE> StaticHuffman::count_freq(ifstream &input){
 }
 
 HuffNode* StaticHuffman::build_trie(array<int, ALPHABET_SIZE> &freq){
-    priority_queue<HuffNode*, vector<HuffNode*>, CompareHuffNode> pq;
+    priority_queue<HuffNode*, vector<HuffNode*>, CompareHuffNode> pq; //use compare to make sure nodes with low freq are at the top of the tree and have a shorter code
     for (int i=0; i<ALPHABET_SIZE; i++){
         if(freq[i]>0){
             pq.push(new HuffNode(static_cast<char>(i), freq[i], nullptr, nullptr));
         }
     }
 
-    while(pq.size()>1){
+    while(pq.size()>1){ //while there are more than the root in queue
         HuffNode *left = pq.top();
         pq.pop();
         HuffNode *right =pq.top();
@@ -106,7 +105,7 @@ HuffNode* StaticHuffman::build_trie(array<int, ALPHABET_SIZE> &freq){
         return nullptr;
     }
     else{
-        return pq.top();
+        return pq.top(); //will be the root
     }
 
 }
@@ -156,7 +155,7 @@ void StaticHuffman::compress(string &input_file, string &output_file){
     uint32_t file_size=input.tellg(); //
     input.seekg(0); //rewind
     cout << "Input file size: " << file_size << endl;
-    
+    //write file size by bytes
     writer.write_byte((file_size>>24)&0xFF); //msb
     writer.write_byte((file_size>>16)&0xFF);
     writer.write_byte((file_size>>8)&0xFF);
@@ -190,7 +189,7 @@ void StaticHuffman::decompress(string &input_file, string &output_file){
         if(!reader.read_byte(byte)){
             throw runtime_error("error ~ at reading file size");
         }
-        file_size = (file_size<<8)|byte; //
+        file_size = (file_size<<8)|byte; //reconstructs a the file size from the individual bytes
     }
 
     for(uint32_t i=0; i<file_size; i++){

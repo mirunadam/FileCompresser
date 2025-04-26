@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
         if (mode == "-c") {
             adaptive_huffman.compress(input, output);
         } else if (mode == "-d") {
-            //adaptive_huffman.decompress(input, output);
+            adaptive_huffman.decompress(input, output);
         } else {
             cerr << "Unknown mode: " << mode << endl;
         }

@@ -63,7 +63,7 @@ void StaticHuffman::write_trie(HuffNode *x, bit_writer &writer){
     write_trie(x->right, writer); //serialize right part
 }
 
-void Huffman::free_trie(HuffNode *x){ //works post order ~ first free childern
+void StaticHuffman::free_trie(HuffNode *x){ //works post order ~ first free childern
     if(!x){
         return;
     }

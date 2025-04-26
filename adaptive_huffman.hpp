@@ -1,4 +1,3 @@
-// adaptive_huffman.hpp
 #pragma once
 #include <fstream>
 #include <cstdint>
@@ -13,8 +12,8 @@ using namespace std;
 
 struct HuffNode_A {
     HuffNode_A *left = nullptr, *right = nullptr, *parent = nullptr;
-    int weight = 0;
-    int number = 0;
+    int weight = 0; //like a freq counter ~ the higher the weight the shorter the code
+    int number = 0; //enables correct swaps between siblings, it will be assigned decreasingly
     uint8_t ch;
     bool isNYT = false;
     bool isLeaf = false;
@@ -36,11 +35,10 @@ class AdaptiveHuffman {
     void insert(uint8_t ch);
     void free_tree(HuffNode_A *x);
     void encode(uint8_t ch, bit_writer &writer);
-
-
+    bool decode(ofstream &output, bit_reader &reader);
 
 public:
     void compress(string &input_file, string &output_file);
-    //void decompress(string &input_file, string &output_file);
+    void decompress(string &input_file, string &output_file);
 };
 
